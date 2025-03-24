@@ -7,7 +7,7 @@ class EmbeddingsProducer:
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertModel.from_pretrained('bert-base-uncased').to(self.device)
 
-    def __create_embedding(self, text):
+    def create_embedding(self, text):
         encoding = self.tokenizer.batch_encode_plus(
             [text],
             padding=True,
@@ -21,4 +21,6 @@ class EmbeddingsProducer:
             outputs = self.model(input_ids, attention_mask=attention_mask)
             word_embeddings = outputs.last_hidden_state
         sentence_embedding = word_embeddings.mean(dim=1)
-        return sentence_embedding.cpu()
+
+        sentence_embedding.cpu()
+        return sentence_embedding[0].numpy()
