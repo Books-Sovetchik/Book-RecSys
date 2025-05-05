@@ -29,10 +29,8 @@ class RecommendUsingGraph:
 
         return [neighbor.rsplit(" (", 1)[0] for neighbor in all_neighbors]
     
-    def find_closest_books(self, title, n=20):
-        """Find the top-N most relevant books based on the model and neighbor graph."""
-        predicted = self.model.recommend_by_title(title, n + 1)
-
+    def recommend_graph(self, title, n = 10):
+        """ Recommendation of top n books using graph"""
         neighbors = self.find_neighbors_title(title)
 
         embedding = None
@@ -46,8 +44,8 @@ class RecommendUsingGraph:
 
         neighbor_scores = {}
         for neighbor in neighbors:
-            if neighbor == title: 
-                continue  
+            if neighbor == title:
+                continue
 
             neighbor_embedding = None
             for i in self.model.model:
@@ -64,19 +62,27 @@ class RecommendUsingGraph:
 
             neighbor_scores[neighbor] = similarity
 
-        sorted_neighbors = sorted(neighbor_scores.items(), key=lambda x: -x[1])[:10]
+        sorted_neighbors = sorted(neighbor_scores.items(), key=lambda x: -x[1])[:n]
+        return sorted_neighbors
 
-        combined = {}
+def main():
+    PROJECT_ROOT = os.path.abspath(os.getcwd())
+    if PROJECT_ROOT not in sys.path:
+        sys.path.insert(0, PROJECT_ROOT)
+    print("PROJECT_ROOT:", PROJECT_ROOT)
 
-        for book, score in predicted:
-            if book != title:  
-                combined[book] = score
+    graph_path = os.path.join(PROJECT_ROOT,"data/graphs/book_graph.json") 
+    embeddings_path = os.path.join(PROJECT_ROOT, "data/embeddings/merged_embeddings.npy") 
+    
+    from src.models.modules import BookDescriptionEmbeddingSimilarity
 
-        for book, similarity in sorted_neighbors:
-            if book in combined:
-                combined[book] = max(combined[book], similarity) 
-            else:
-                combined[book] = similarity
+    model = BookDescriptionEmbeddingSimilarity(embeddings_path)  
 
-        sorted_books = sorted(combined.items(), key=lambda x: -x[1])
-        return [(book, score) for book, score in sorted_books[:n]]
+    recommender = RecommendUsingGraph(graph_path, model)
+    print("aaa")
+    res = recommender.predict_graph("1984")
+    for book, score in res:
+        print(f"lol {book}: {score}")
+
+if __name__ == "__main__":
+    main()
