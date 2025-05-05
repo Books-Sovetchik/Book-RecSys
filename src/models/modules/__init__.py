@@ -2,3 +2,4 @@ from .book_description_embedding_similarity.embeddings_similarity import BookDes
 from .book_description_embedding_similarity.embeddings_producer import EmbeddingsProducer
 from .book_graph_descriptions.graph_and_embeddings_similiraty import RecommendUsingGraph
 from .search_books_by_title.search_books_by_title import SearchBooksByTitle
+from .sequences.sequence_recommender import SequenceRecommender
