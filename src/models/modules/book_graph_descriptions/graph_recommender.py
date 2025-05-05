@@ -64,25 +64,3 @@ class RecommendUsingGraph:
 
         sorted_neighbors = sorted(neighbor_scores.items(), key=lambda x: -x[1])[:n]
         return sorted_neighbors
-
-def main():
-    PROJECT_ROOT = os.path.abspath(os.getcwd())
-    if PROJECT_ROOT not in sys.path:
-        sys.path.insert(0, PROJECT_ROOT)
-    print("PROJECT_ROOT:", PROJECT_ROOT)
-
-    graph_path = os.path.join(PROJECT_ROOT,"data/graphs/book_graph.json") 
-    embeddings_path = os.path.join(PROJECT_ROOT, "data/embeddings/merged_embeddings.npy") 
-    
-    from src.models.modules import BookDescriptionEmbeddingSimilarity
-
-    model = BookDescriptionEmbeddingSimilarity(embeddings_path)  
-
-    recommender = RecommendUsingGraph(graph_path, model)
-    print("aaa")
-    res = recommender.predict_graph("1984")
-    for book, score in res:
-        print(f"lol {book}: {score}")
-
-if __name__ == "__main__":
-    main()
