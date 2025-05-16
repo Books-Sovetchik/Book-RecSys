@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 outs:
 
 - md5: 5c2e92a8826a836c14ae612a7334d9e2.dir
@@ -14,20 +13,3 @@ outs:
 
 
   path: data
-=======
-outs:
-
-- md5: 7af1e856270bd92073cdd00b1758346e.dir
-
-
-  size: 5841999741
-
-
-  nfiles: 15
-
-
-  hash: md5
-
-
-  path: data
->>>>>>> 5788255593e6958597b7c7b53b851372d822a6ec
