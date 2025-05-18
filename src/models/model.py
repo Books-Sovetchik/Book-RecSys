@@ -4,7 +4,7 @@ from modules.book_description_embedding_similarity.embeddings_similarity import 
 from modules.book_graph_descriptions.graph_recommender import GraphRecommender
 from modules.sequences.sequence_recommender import SequenceRecommender
 
-class Bibliotear():
+class Bibliotekar():
     def __init__(self, embds_path, model_path, device):
         self.embds = np.load(embds_path)
         self.size = len(self.embds["titles"])
