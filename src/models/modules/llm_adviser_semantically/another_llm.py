@@ -70,7 +70,8 @@ class Llm:
         final_recommendations = query_llm(prompt)
         return final_recommendations[:10]
 
-    def find_closest_books(book_title: str) -> list:
+    def predict(book_emb, books_embs) -> list:
+        book_title = str(books_emb)
         all_titles = load_book_titles(CSV_PATH)
         candidates = get_candidates_from_batches(book_title, all_titles)
         unique_candidates = list(dict.fromkeys(candidates))  # remove duplicates
