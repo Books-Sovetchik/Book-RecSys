@@ -6,8 +6,8 @@ import numpy as np
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-input_dim = 389
-output_dim = 389
+input_dim = 768
+output_dim = 768
 hidden_dim = 128
 num_layers = 3
 dropout = 0.2
@@ -35,14 +35,16 @@ class UserContextModel():
         self.model = Rekomendatel().to(device)
         self.model.load_state_dict(torch.load(model_path))
         self.model.eval()
-        self.dataset = np.load(data_path, allow_pickle=True)
         self.device = device
 
     def predict(self, user_prev):
         user_prev = torch.from_numpy(user_prev).float().to(self.device)
         return self.model(user_prev)
     
-    def predict_books(self, user_prev, top_k=10):
+    def predict_books(self, user_prev, dataset, top_k=10):
+        self.dataset = dataset
+        self.tittles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
+
         user_vec = self.predict(user_prev)
         user_vec = F.normalize(user_vec, dim=-1)
 
@@ -53,7 +55,31 @@ class UserContextModel():
         top_indices = torch.topk(similarities, k=top_k).indices.cpu().numpy()
 
         recommended_titles = [str(self.titles[i]) for i in top_indices]
-        scores = similarities[top_indices].detach().cpu().numpy()
+        recommended_embds = [self.embeddings[i] for i in top_indices]
 
-        return list(zip(recommended_titles, scores))
+        return {
+            "titles": recommended_titles,
+            "embeddings": recommended_embds
+        }
         
+    def predict_last(self, embd, dataset, top_k=10):
+        self.dataset = dataset
+
+        self.tittles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
+
+        user_vec = embd
+        user_vec = F.normalize(user_vec, dim=-1)
+
+        book_embeds = torch.from_numpy(self.embeddings).to(self.device)
+        book_embeds = F.normalize(book_embeds, dim=-1)
+
+        similarities = torch.matmul(book_embeds, user_vec.T).squeeze()
+        top_indices = torch.topk(similarities, k=top_k).indices.cpu().numpy()
+
+        recommended_titles = [str(self.titles[i]) for i in top_indices]
+        recommended_embds = [self.embeddings[i] for i in top_indices]
+
+        return {
+            "titles": recommended_titles,
+            "embeddings": recommended_embds
+        }
