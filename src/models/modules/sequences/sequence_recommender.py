@@ -3,24 +3,38 @@ import os
 import sys
 from difflib import get_close_matches
 import pandas as pd
+import re
 
 class SequenceRecommender:
     def __init__(self, dataset_path, sequence_path):
         self.dataset_df = pd.read_csv(dataset_path)
         self.filtered_patterns = self.load_sequences(sequence_path)
         self.titles = self.dataset_df["Title"].dropna().to_list()
+    
+    def normalize_title(self, title):
+        title = re.sub(r'[\(\[\{].*?[\)\]\}]', '', title)
+        title = title.replace('-', ' ')
+        title = re.sub(r'[^a-zA-Z0-9\s]', '', title)
+        return title.strip().lower()
+    
+    def get_books(self):
+        all_titles = [title for pattern, _ in self.filtered_patterns for title in pattern]
+        return all_titles
 
-    def closest_title(self, title, size):
-        return get_close_matches(title, self.titles, n=size, cutoff=0.6)
-    
-    """placeholder for a better function to return closest titles to input"""
-    def get_titles(self, title):
-        res = []
-        for t in self.titles:
-            if title.lower() in t.lower():
-                res.append(t)
-        return res
-    
+    def find_closest_title(self, input_title):
+        normalized_input = self.normalize_title(input_title)
+        all_titles = self.get_books()
+        normalized_to_original = {
+            self.normalize_title(title): title for title in all_titles
+        }
+
+        closest_matches = get_close_matches(normalized_input, normalized_to_original.keys(), n=1, cutoff=0.9)
+
+        if closest_matches:
+            return normalized_to_original[closest_matches[0]]
+        else:
+            return None
+
     @staticmethod
     def load_sequences(path):
         with open(path, 'r') as f:
@@ -41,6 +55,9 @@ class SequenceRecommender:
 
     """top 10 books found in the most of other users"""
     def recommend_seq(self, given_book):
+        given_book = self.find_closest_title(given_book)
+        if (given_book is None):
+            return None
         sequences_with_book = [
             (pattern, support)
             for pattern, support in self.filtered_patterns
