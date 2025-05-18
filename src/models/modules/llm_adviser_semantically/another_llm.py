@@ -9,11 +9,11 @@ CSV_PATH = "output.csv" #pyt koroche
 BATCH_SIZE = 4000
 
 class Llm:
-    def load_book_titles(csv_path: str) -> list:
+    def load_book_titles(self, csv_path: str) -> list:
         df = pd.read_csv(csv_path)
         return df.iloc[:, 0].dropna().tolist()
 
-    def query_llm(prompt: str) -> list:
+    def query_llm(self, prompt: str) -> list:
         headers = {
             "Authorization": f"Bearer {API_KEY}",
             "Content-Type": "application/json"
@@ -42,7 +42,7 @@ class Llm:
             print("Response parsing error:", e)
             return []
 
-    def get_candidates_from_batches(book_title: str, all_titles: list) -> list:
+    def get_candidates_from_batches(self, book_title: str, all_titles: list) -> list:
         total = len(all_titles)
         num_batches = math.ceil(total / BATCH_SIZE)
         all_candidates = []
@@ -55,25 +55,25 @@ class Llm:
                 + "\n".join(batch_titles)
                 + "\n\nOnly return the book titles as a list."
             )
-            candidates = query_llm(prompt)
+            candidates = self.query_llm(prompt)
             all_candidates.extend(candidates)
 
         return all_candidates
 
-    def get_final_recommendations(book_title: str, candidates: list) -> list:
+    def get_final_recommendations(self, book_title: str, candidates: list) -> list:
         prompt = (
             f"I have a book titled: '{book_title}'.\n"
             f"From the following list of candidate books, select the 10 most semantically similar:\n\n"
             + "\n".join(candidates)
             + "\n\nOnly return the titles as a clean list."
         )
-        final_recommendations = query_llm(prompt)
+        final_recommendations = self.query_llm(prompt)
         return final_recommendations[:10]
 
-    def predict(book_emb, books_embs) -> list:
-        book_title = str(books_emb)
-        all_titles = load_book_titles(CSV_PATH)
-        candidates = get_candidates_from_batches(book_title, all_titles)
+    def predict(self, book_emb, books_embs) -> list:
+        book_title = str(book_emb)
+        all_titles = self.load_book_titles(CSV_PATH)
+        candidates = self.get_candidates_from_batches(book_title, all_titles)
         unique_candidates = list(dict.fromkeys(candidates))  # remove duplicates
-        recommendations = get_final_recommendations(book_title, unique_candidates)
+        recommendations = self.get_final_recommendations(book_title, unique_candidates)
         return recommendations
