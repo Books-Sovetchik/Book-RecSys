@@ -4,8 +4,11 @@ from modules.book_description_embedding_similarity.embeddings_similarity import 
 from modules.book_graph_descriptions.graph_recommender import GraphRecommender
 from modules.sequences.sequence_recommender import SequenceRecommender
 
+import torch
+
 class Bibliotekar():
-    def __init__(self, embds_path, model_path, device):
+    def __init__(self, embds_path, model_path):
+        self.device = device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.embds = np.load(embds_path)
         self.size = len(self.embds["titles"])
         self.model = UserContextModel(embds_path, model_path, device)
