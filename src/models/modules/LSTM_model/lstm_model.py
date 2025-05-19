@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch import functional as F
+import torch.nn.functional as F
 
 import numpy as np
 
@@ -33,7 +33,7 @@ class Rekomendatel(nn.Module):
 class UserContextModel():
     def __init__(self, data_path, model_path, device):
         self.model = Rekomendatel().to(device)
-        self.model.load_state_dict(torch.load(model_path))
+        self.model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
         self.model.eval()
         self.device = device
 
@@ -65,9 +65,9 @@ class UserContextModel():
     def predict_last(self, embd, dataset, top_k=10):
         self.dataset = dataset
 
-        self.tittles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
+        self.titles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
 
-        user_vec = embd
+        user_vec = torch.tensor(embd)
         user_vec = F.normalize(user_vec, dim=-1)
 
         book_embeds = torch.from_numpy(self.embeddings).to(self.device)
