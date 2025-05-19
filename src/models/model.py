@@ -34,7 +34,7 @@ class Bibliotekar():
         
 
         
-        first_iter = self.model.predict_books(last_books, last_book, self.embds, top_k=self.size/10)
+        first_iter = self.model.predict_books(last_books, self.embds, top_k=self.size/10)
         second_iter = self.model.predict_last(last_book, first_iter, top_k=k)
 
         return top + second_iter["titles"]
