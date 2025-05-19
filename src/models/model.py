@@ -25,12 +25,12 @@ class Bibliotekar():
     def predict(self, last_book, k=10):
         return self.model.predict_last(last_book, self.embds, top_k=k)
 
-    def predict_context(self, last_books, last_book, dataset_ver="fs", k = 10):
+    def predict_context(self, last_books, last_book, last_book_title, dataset_ver="fs", k = 10):
         top = []
         if dataset_ver == "fs":
-            top = self.graph.recommend_graph(last_book, k)
+            top = self.graph.recommend_graph(last_book_title, k)
         elif dataset_ver == "ss":
-            top = self.seq.recommend_seq(last_book, k)
+            top = self.seq.recommend_seq(last_book_title, k)
         
 
         
