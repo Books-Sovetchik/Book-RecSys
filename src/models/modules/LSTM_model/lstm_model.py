@@ -43,7 +43,7 @@ class UserContextModel():
     
     def predict_books(self, user_prev, dataset, top_k=10):
         self.dataset = dataset
-        self.titles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
+        self.titles, self.embeddings = np.array(self.dataset["titles"]), np.array(self.dataset["embeddings"])
 
         user_vec = self.predict(user_prev)
         user_vec = F.normalize(user_vec, dim=-1)
@@ -65,7 +65,7 @@ class UserContextModel():
     def predict_last(self, embd, dataset, top_k=10):
         self.dataset = dataset
 
-        self.titles, self.embeddings = self.dataset["titles"], self.dataset["embeddings"]  
+        self.titles, self.embeddings = np.array(self.dataset["titles"]), np.array(self.dataset["embeddings"])
 
         user_vec = torch.tensor(embd)
         user_vec = F.normalize(user_vec, dim=-1)
