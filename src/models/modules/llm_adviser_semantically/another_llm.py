@@ -70,7 +70,15 @@ class Llm:
         final_recommendations = self.query_llm(prompt)
         return final_recommendations[:10]
 
-    def predict(self, book_emb, books_embs) -> list:
+    def predict(self, book_emb) -> list:
+        book_title = str(book_emb)
+        all_titles = self.load_book_titles(CSV_PATH)
+        candidates = self.get_candidates_from_batches(book_title, all_titles)
+        unique_candidates = list(dict.fromkeys(candidates))  # remove duplicates
+        recommendations = self.get_final_recommendations(book_title, unique_candidates)
+        return recommendations
+
+    def predict_context(self, book_emb,books_embs) -> list:
         book_title = str(book_emb)
         all_titles = self.load_book_titles(CSV_PATH)
         candidates = self.get_candidates_from_batches(book_title, all_titles)
