@@ -28,16 +28,10 @@ class Bibliotekar():
     def predict_context(self, last_books, last_book, last_book_title, dataset_ver="fs", k = 10):
         top = []
         if last_book_title != "":
-            if dataset_ver == "fs":
-                top = self.graph.recommend_graph(last_book_title, k)
-            elif dataset_ver == "ss":
-                top = self.seq.recommend_seq(last_book_title, k)
-        
-
+            top += (self.seq.recommend_seq(last_book_title, k))
+            top += (self.graph.recommend_graph(last_book_title, k))
         
         first_iter = self.model.predict_books(last_books, self.embds, top_k=self.size//10)
         second_iter = self.model.predict_last(last_book, first_iter, top_k=k)
 
-        return [ x for x, _ in top] + second_iter["titles"]
-    
-
+        return top + second_iter["titles"]
