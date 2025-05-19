@@ -54,7 +54,7 @@ class SequenceRecommender:
         return titles_to_keep
 
     """top 10 books found in the most of other users"""
-    def recommend_seq(self, given_book):
+    def recommend_seq(self, given_book, n = 10):
         given_book = self.find_closest_title(given_book)
         if (given_book is None):
             return None
@@ -73,4 +73,4 @@ class SequenceRecommender:
             title for pattern_titles, _ in sorted_sequences
             for title in pattern_titles if title.lower() != given_book.lower()
         ]
-        return self.remove_duplicates(all_titles)[:10]
+        return self.remove_duplicates(all_titles)[:n]
