@@ -64,4 +64,7 @@ class RecommendUsingGraph:
             neighbor_scores[neighbor] = similarity
 
         sorted_neighbors = sorted(neighbor_scores.items(), key=lambda x: -x[1])[:n]
-        return sorted_neighbors
+        res = []
+        for book, _ in sorted_neighbors:
+            res.append(book)
+        return res
