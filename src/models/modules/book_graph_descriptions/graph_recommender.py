@@ -42,7 +42,7 @@ class RecommendUsingGraph:
 
         title_embedding = title_to_embedding.get(title)
         if title_embedding is None:
-            raise ValueError(f"Title '{title}' not found in the embeddings.")
+            return []
 
         norm_title = np.linalg.norm(title_embedding)
         neighbor_scores = {}
