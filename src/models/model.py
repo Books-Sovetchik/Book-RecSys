@@ -35,7 +35,10 @@ class Bibliotekar():
             if recs2:
                 top += recs2
         from math import ceil
-        first_iter = self.model.predict_books(last_books, self.embds, top_k=ceil(self.size*0.9))
-        second_iter = self.model.predict_last(last_book, first_iter, top_k=k)
+        if len(last_books) == 0:
+            return top + self.model.predict_last(last_book, self.embds, top_k=k)["titles"]
+        else:
+            first_iter = self.model.predict_books(last_books, self.embds, top_k=ceil(self.size*0.9))
+            second_iter = self.model.predict_last(last_book, first_iter, top_k=k)
 
         return top + second_iter["titles"]
